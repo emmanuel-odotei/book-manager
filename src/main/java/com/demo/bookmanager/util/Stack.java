@@ -4,31 +4,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Stack <T> {
-    private final List<T> stack;
+    private final List<T> bookStack;
     
     public Stack() {
-        this.stack = new ArrayList<>();
+        this.bookStack = new ArrayList<>();
     }
     
     public void push(T item) {
-        stack.add(item);
+        bookStack.add(item);
     }
     
     public T pop() {
         if (isEmpty()) {
             throw new IllegalStateException("Stack is empty");
         }
-        return stack.remove(stack.size() - 1);
+        return bookStack.remove(bookStack.size() - 1);
     }
     
     public T peek() {
         if (isEmpty()) {
             throw new IllegalStateException("Stack is empty");
         }
-        return stack.get(stack.size() - 1);
+        return bookStack.get(bookStack.size() - 1);
     }
     
     public boolean isEmpty() {
-        return stack.isEmpty();
+        return bookStack.isEmpty();
     }
 }
