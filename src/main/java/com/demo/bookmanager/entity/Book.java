@@ -1,21 +1,25 @@
 package com.demo.bookmanager.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
-@Table(name = "books")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "books")
 public class Book {
 
     @Id
     @SequenceGenerator( name = "book_sequence", sequenceName = "book_sequence", allocationSize = 1 )
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_sequence")
-    private Long id;
+    private Long bookId;
     
     private String title;
     
@@ -23,7 +27,7 @@ public class Book {
     
     private int publicationYear;
     
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "book_id")
-    private Set<Author> authors;
+    private List<Author> authors;
 }
