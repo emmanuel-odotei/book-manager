@@ -1,12 +1,12 @@
 package com.demo.bookmanager.service.impl;
 
 import com.demo.bookmanager.entity.User;
-import com.demo.bookmanager.exception.JwtExpiredException;
 import com.demo.bookmanager.service.JWTService;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +18,11 @@ import java.util.function.Function;
 @Service
 public class JWTServiceImpl implements JWTService {
     @Override
-    public String generateToken(User user) {
+    public String generateToken (User user) {
         return Jwts.builder()
                 .setSubject( user.getUsername() )
-                .setIssuedAt( new Date(System.currentTimeMillis()) )
-                .setExpiration( new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10) )
+                .setIssuedAt( new Date( System.currentTimeMillis() ) )
+                .setExpiration( new Date( System.currentTimeMillis() + 1000 * 60 * 60 * 10 ) )
                 .signWith( getSigninKey(), SignatureAlgorithm.HS256 )
                 .compact();
     }
@@ -32,15 +32,15 @@ public class JWTServiceImpl implements JWTService {
         return Jwts.builder()
                 .setClaims( extraClaims )
                 .setSubject( userDetails.getUsername() )
-                .setIssuedAt( new Date(System.currentTimeMillis()) )
-                .setExpiration( new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24) )
+                .setIssuedAt( new Date( System.currentTimeMillis() ) )
+                .setExpiration( new Date( System.currentTimeMillis() + 1000 * 60 * 60 * 24 ) )
                 .signWith( getSigninKey(), SignatureAlgorithm.HS256 )
                 .compact();
     }
     
     @Override
     public String extractUsername (String token) {
-        return extractClaim(token, Claims::getSubject);
+        return extractClaim( token, Claims::getSubject );
     }
     
     private Key getSigninKey () {
@@ -48,31 +48,27 @@ public class JWTServiceImpl implements JWTService {
         return Keys.hmacShaKeyFor( key );
     }
     
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolvers.apply(claims);
+    private <T> T extractClaim (String token, Function<Claims, T> claimsResolvers) {
+        final Claims claims = extractAllClaims( token );
+        return claimsResolvers.apply( claims );
     }
     
     private Claims extractAllClaims (String token) {
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey( getSigninKey() )
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch ( ExpiredJwtException e ) {
-            throw new JwtExpiredException( "Token expired" );
-        }
+        return Jwts.parserBuilder()
+                .setSigningKey( getSigninKey() )
+                .build()
+                .parseClaimsJws( token )
+                .getBody();
     }
     
     @Override
     public boolean isTokenValid (String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String username = extractUsername( token );
+        return ( username.equals( userDetails.getUsername() ) && !isTokenExpired( token ) );
     }
     
     private boolean isTokenExpired (String token) {
-        return extractClaim( token, Claims::getExpiration).before( new Date() );
+        return extractClaim( token, Claims::getExpiration ).before( new Date() );
     }
     
 }

@@ -17,10 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
     
     private final AuthenticationService authenticationService;
-//    private final PasswordResetService passwordResetService;
     
     @PostMapping("signup")
-    public ResponseEntity<User> signUp(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest) {
         return ResponseEntity.ok(authenticationService.signUp(signUpRequest));
     }
     
@@ -38,16 +37,4 @@ public class AuthenticationController {
     public ResponseEntity<User> assignRole(@PathVariable Long id, RoleEnum role) {
         return ResponseEntity.ok(authenticationService.assignRole(id, role));
     }
-    
-//    @PostMapping("reset-request")
-//    public ResponseEntity<String> requestResetPassword(@RequestParam("email") String email) {
-//        passwordResetService.createPasswordResetToken(email);
-//        return ResponseEntity.ok("Password reset link sent to email successfully.");
-//    }
-//
-//    @PostMapping("reset-password")
-//    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetRequest passwordResetRequest) {
-//        passwordResetService.resetPassword(passwordResetRequest.getToken(), passwordResetRequest.getNewPassword());
-//        return ResponseEntity.ok("Password reset successfully.");
-//    }
 }

@@ -35,19 +35,13 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
          http.csrf( AbstractHttpConfigurer::disable )
                  .authorizeHttpRequests( request -> request
-                         .requestMatchers( HttpMethod.POST,"/auth/signup" ).permitAll()
-                         .requestMatchers( HttpMethod.POST,"/auth/signin" ).permitAll()
+                         .requestMatchers( "/auth/signup" ).permitAll()
+                         .requestMatchers( "/auth/signin" ).permitAll()
                          .requestMatchers( "/error" ).permitAll()
-                         .requestMatchers( HttpMethod.GET, "/authors" ).hasAnyAuthority( RoleEnum.USER.name(), RoleEnum.ADMIN.name())
-                         .requestMatchers( HttpMethod.GET, "/authors/{authorId}" ).hasAnyAuthority( RoleEnum.ADMIN.name(), RoleEnum.USER.name() )
                          .requestMatchers( HttpMethod.PUT, "/authors/{authorId}").hasAuthority( RoleEnum.ADMIN.name() )
                          .requestMatchers( HttpMethod.POST, "/authors/create" ).hasAuthority( RoleEnum.ADMIN.name() )
                          .requestMatchers( HttpMethod.DELETE, "/authors/{authorId}").hasAuthority( RoleEnum.ADMIN.name() )
-                         .requestMatchers( HttpMethod.GET, "/books" ).hasAnyAuthority( RoleEnum.ADMIN.name(), RoleEnum.USER.name() )
-                         .requestMatchers( HttpMethod.GET, "/books/{bookId}" ).hasAnyAuthority( RoleEnum.ADMIN.name(), RoleEnum.USER.name() )
-                         .requestMatchers( HttpMethod.PUT, "/books/{bookId}" ).hasAnyAuthority( RoleEnum.ADMIN.name(), RoleEnum.USER.name() )
-                         .requestMatchers( HttpMethod.POST, "/books/create" ).hasAnyAuthority( RoleEnum.ADMIN.name(), RoleEnum.USER.name() )
-                         .requestMatchers( HttpMethod.DELETE, "/books/{bookId}" ).hasAnyAuthority( RoleEnum.ADMIN.name(), RoleEnum.USER.name() )
+                         .requestMatchers( HttpMethod.POST, "/auth/assign/{id}" ).hasAuthority( RoleEnum.ADMIN.name())
                          .anyRequest()
                          .authenticated()
                  )
@@ -79,6 +73,6 @@ public class SecurityConfiguration {
     
     @Bean
     public UserDetailsService userDetailsService () {
-        return username -> userRepository.findByEmail( username ).orElseThrow(() -> new NotFoundException( "User not found" ) );
+        return userRepository::findByEmail;
     }
 }

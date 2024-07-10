@@ -32,7 +32,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     
     @Override
     @Transactional
-    public User signUp (SignUpRequest signUpRequest) {
+    public String signUp (SignUpRequest signUpRequest) {
         if ( userRepository.existsByEmail( signUpRequest.getEmail() ) ) {
             throw new IllegalArgumentException( "Email already taken. Please choose another one" );
         }
@@ -45,8 +45,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setRole( signUpRequest.getRole() );
         user.setPassword( passwordEncoder.encode( signUpRequest.getPassword() ) );
         
-        return userRepository.save( user );
+        userRepository.save( user );
         
+        return "Signup Successful";
     }
     
     @Override
@@ -54,7 +55,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtAuthenticationResponse signIn (SignInRequest signInRequest) {
         authenticationManager.authenticate( new UsernamePasswordAuthenticationToken( signInRequest.getEmail(), signInRequest.getPassword() ) );
         
-        User user = userRepository.findByEmail( signInRequest.getEmail() ).get();
+        User user = userRepository.findByEmail( signInRequest.getEmail() );
         
         String jwtToken = jwtService.generateToken( user );
         String refreshToken = jwtService.generateRefreshToken( new HashMap<>(), user );
@@ -69,7 +70,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Transactional
     public JwtAuthenticationResponse refreshToken (RefreshTokenRequest refreshTokenRequest) {
         String userEmail = jwtService.extractUsername( refreshTokenRequest.getRefreshToken() );
-        User user = userRepository.findByEmail( userEmail ).orElseThrow( () -> new IllegalArgumentException( "Invalid Email or Password" ) );
+        User user = userRepository.findByEmail( userEmail );
         
         if (  jwtService.isTokenValid( refreshTokenRequest.getRefreshToken(), user ) ) {
             String jwtToken = jwtService.generateToken( user );

@@ -25,31 +25,21 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public List<Book> listAllBooks () {
-        List<Book> cachedBooks = bookCache.getBooks();
-        
-        if ( cachedBooks != null ) {
-            return cachedBooks;
-        }
-        
-        List<Book> books = bookRepository.findAll();
-        
-        bookCache.putBooks( books );
-        
-        return books;
+        return bookRepository.findAll();
     }
     
     @Override
     @Transactional
     public Book getBook (Long id) throws NotFoundException {
-        Book cachedBook = BookCache.getBook(id);
+        Book cachedBook = BookCache.getBook( id );
         
         if ( cachedBook != null ) {
             return cachedBook;
         }
         
-        Book book = bookRepository.findById(id).orElseThrow(() -> new NotFoundException( "Book not found" ) );
+        Book book = bookRepository.findById( id ).orElseThrow( () -> new NotFoundException( "Book not found" ) );
         
-        bookCache.addOrUpdateBook(id, book);
+        bookCache.addOrUpdateBook( id, book );
         
         return book;
     }
@@ -57,37 +47,37 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public Book createBook (BookRequest book) {
-        List<Author> authors = authorRepository.findByAuthorIdIn(book.getAuthorIds());
-        Book newBook = BookFactory.createBook( book.getBook().getTitle(), book.getBook().getIsbn(), book.getBook().getPublicationYear(), authors);
+        List<Author> authors = authorRepository.findByAuthorIdIn( book.getAuthorIds() );
+        Book newBook = BookFactory.createBook( book.getBook().getTitle(), book.getBook().getIsbn(), book.getBook().getPublicationYear(), authors );
         
-        return bookRepository.save(newBook);
+        return bookRepository.save( newBook );
     }
     
     @Override
     @Transactional
     public Book updateBook (Long id, BookRequest book) {
-        Book existingBook = bookRepository.findById(id).orElseThrow(() -> new NotFoundException( "Book not found" ) );
+        Book existingBook = bookRepository.findById( id ).orElseThrow( () -> new NotFoundException( "Book not found" ) );
         
-        existingBook.setTitle(book.getBook().getTitle() != null ? book.getBook().getTitle() : existingBook.getTitle());
-        existingBook.setIsbn(book.getBook().getIsbn() != null ? book.getBook().getIsbn() : existingBook.getIsbn());
-        existingBook.setPublicationYear(book.getBook().getPublicationYear());
+        existingBook.setTitle( book.getBook().getTitle() != null ? book.getBook().getTitle() : existingBook.getTitle() );
+        existingBook.setIsbn( book.getBook().getIsbn() != null ? book.getBook().getIsbn() : existingBook.getIsbn() );
+        existingBook.setPublicationYear( book.getBook().getPublicationYear() );
         
-        if (book.getAuthorIds() != null && !book.getAuthorIds().isEmpty()) {
-            List<Author> authors = authorRepository.findByAuthorIdIn(book.getAuthorIds());
-            if (!authors.isEmpty()) {
-                existingBook.setAuthors(authors);
+        if ( book.getAuthorIds() != null && !book.getAuthorIds().isEmpty() ) {
+            List<Author> authors = authorRepository.findByAuthorIdIn( book.getAuthorIds() );
+            if ( !authors.isEmpty() ) {
+                existingBook.setAuthors( authors );
             } else {
-               existingBook.setAuthors( existingBook.getAuthors() );
+                existingBook.setAuthors( existingBook.getAuthors() );
             }
         }
         
-        return bookRepository.save(existingBook);
+        return bookRepository.save( existingBook );
     }
     
     @Override
     @Transactional
     public void deleteBook (Long id) {
-        Book book = bookRepository.findById(id).orElseThrow(() -> new NotFoundException( "Book not found" ) );
-        bookRepository.delete(book);
+        Book book = bookRepository.findById( id ).orElseThrow( () -> new NotFoundException( "Book not found" ) );
+        bookRepository.delete( book );
     }
 }

@@ -9,7 +9,7 @@ import com.demo.bookmanager.entity.User;
 
 public interface AuthenticationService {
 
-    User signUp(SignUpRequest signUpRequest);
+    String signUp(SignUpRequest signUpRequest);
     
     JwtAuthenticationResponse signIn (SignInRequest signInRequest);
     

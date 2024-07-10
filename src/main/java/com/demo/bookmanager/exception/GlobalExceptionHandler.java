@@ -1,32 +1,36 @@
 package com.demo.bookmanager.exception;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
-    
-    @ExceptionHandler(JwtExpiredException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<String> handleJwtExpiredException(JwtExpiredException ex) {
-        return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).body(ex.getMessage());
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+    @ExceptionHandler( AccessDeniedException.class )
+    public ResponseEntity<CustomErrorResponse> handleAccessDeniedException ( AccessDeniedException ex) {
+        CustomErrorResponse errorResponse = new CustomErrorResponse( HttpStatus.FORBIDDEN.value(), ex.getMessage() );
+        return new ResponseEntity<>( errorResponse, HttpStatus.FORBIDDEN );
     }
+    
+    @ExceptionHandler( ExpiredJwtException.class )
+    public ResponseEntity<CustomErrorResponse> handleJwtExpiredException (ExpiredJwtException ex) {
+        CustomErrorResponse errorResponse = new CustomErrorResponse( HttpStatus.UNAUTHORIZED.value(), "Token Expired" );
+        return new ResponseEntity<>( errorResponse, HttpStatus.UNAUTHORIZED );
+    }
+    
     @ExceptionHandler( NotFoundException.class)
-    @ResponseStatus( HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<CustomErrorResponse> handleNotFoundException(NotFoundException ex) {
+        CustomErrorResponse errorResponse = new CustomErrorResponse( HttpStatus.NOT_FOUND.value(), ex.getMessage() );
+        return new ResponseEntity<>( errorResponse, HttpStatus.NOT_FOUND );
     }
     
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus( HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    public ResponseEntity<CustomErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        CustomErrorResponse errorResponse = new CustomErrorResponse( HttpStatus.BAD_REQUEST.value(), ex.getMessage() );
+        return new ResponseEntity<>( errorResponse, HttpStatus.BAD_REQUEST );
     }
 }
