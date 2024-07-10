@@ -2,46 +2,43 @@ package com.demo.bookmanager.controller;
 
 
 import com.demo.bookmanager.entity.Author;
-import com.demo.bookmanager.exception.BookAppException;
 import com.demo.bookmanager.service.AuthorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/authors")
 public class AuthorController {
     
     private final AuthorService authorService;
     
-    @GetMapping("/authors")
-    public List<Author> getAuthors() {
-     return authorService.listAuthors();
+    @GetMapping
+    public ResponseEntity<List<Author>> getAuthors() {
+     return ResponseEntity.ok(authorService.listAuthors());
     }
     
-    @GetMapping("/authors/{authorId}")
-    public Author getAuthorById(@PathVariable Long authorId) {
-        return authorService.getAuthorById(authorId);
+    @GetMapping("/{authorId}")
+    public ResponseEntity<Author> getAuthorById(@PathVariable Long authorId) {
+        return ResponseEntity.ok(authorService.getAuthorById(authorId));
     }
     
-    @PostMapping("/authors")
-    public Author createAuthor(@RequestBody Author author) {
-        return authorService.createAuthor(author);
+    @PostMapping("/create")
+    public ResponseEntity<Author> createAuthor(@RequestBody Author author) {
+        return ResponseEntity.ok(authorService.createAuthor(author));
     }
     
-    @PutMapping("/authors/{authorId}")
-    public Author updateAuthor(@PathVariable Long authorId, @RequestBody Author author) {
-        return authorService.updateAuthor(authorId, author);
+    @PutMapping("/{authorId}")
+    public ResponseEntity<Author> updateAuthor(@PathVariable Long authorId, @RequestBody Author author) {
+        return ResponseEntity.ok(authorService.updateAuthor(authorId, author));
     }
     
-    @DeleteMapping("/authors/{authorId}")
+    @DeleteMapping("/{authorId}")
     public String deleteAuthor(@PathVariable Long authorId) {
-        try{
-            authorService.deleteAuthor(authorId);
-        } catch (  Exception e) {
-            throw new BookAppException( e.getMessage() );
-        }
+        authorService.deleteAuthor(authorId);
         return "Author deleted successfully";
     }
 }

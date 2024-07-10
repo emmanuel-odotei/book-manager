@@ -1,19 +1,21 @@
 package com.demo.bookmanager.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 
 @Entity
-@Table(name = "authors")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "authors")
 public class Author {
 
     @Id
     @SequenceGenerator( name = "author_sequence", sequenceName = "author_sequence", allocationSize = 1 )
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "author_sequence")
-    private Long id;
+    private Long authorId;
     
     private String name;
     

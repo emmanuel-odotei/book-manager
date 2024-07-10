@@ -1,14 +1,14 @@
-package com.demo.bookmanager.entity.Dto;
+package com.demo.bookmanager.dto;
 
 import com.demo.bookmanager.entity.Book;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
-public class BookRequestDto {
-    private Set<Long> authorIds;
+public class BookRequest {
+    private List<Long> authorIds;
     private Book book;
 }

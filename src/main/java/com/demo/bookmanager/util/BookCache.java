@@ -29,6 +29,6 @@ public class BookCache {
     }
     
     public void putBooks (List<Book> books) {
-        books.forEach(book -> this.addOrUpdateBook(book.getId(), book));
+        books.forEach(book -> this.addOrUpdateBook(book.getBookId(), book));
     }
 }
